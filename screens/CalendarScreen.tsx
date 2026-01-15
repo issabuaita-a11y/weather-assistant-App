@@ -131,59 +131,59 @@ export const CalendarScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
 
   return (
     <ScreenLayout step={3} showBack onBack={onBack} theme="blue">
-      <div className="flex-1 pt-8">
-        <h1 className="text-[56px] font-black text-black leading-[0.95] tracking-tighter mb-8">
+      <div className="flex-1 pt-4 mobile-lg:pt-6">
+        <h1 className="text-[36px] mobile-lg:text-[40px] font-black text-black leading-[0.95] tracking-tighter mb-4 mobile-lg:mb-5">
           Your<br />Schedule.
         </h1>
         
-        <p className="text-[24px] font-bold text-black/80 mb-12 leading-tight">
+        <p className="text-[16px] mobile-lg:text-[17px] font-bold text-black/80 mb-6 mobile-lg:mb-7 leading-tight">
           Connect your calendar to get weather insights for your upcoming events.
         </p>
 
-        <div className="bg-white/40 backdrop-blur-sm p-6 rounded-[24px] border border-white/50 relative overflow-hidden">
+        <div className="bg-white/40 backdrop-blur-sm p-3 rounded-[24px] border border-white/50 relative overflow-hidden">
              {/* Mock Event Cards */}
-             <div className="flex flex-col gap-4 opacity-80">
-                <div className="flex gap-4 items-center">
-                    <div className="w-[4px] h-[40px] bg-[#4285F4] rounded-full"></div>
+             <div className="flex flex-col gap-3 opacity-80">
+                <div className="flex gap-3 items-center">
+                    <div className="w-[4px] h-[32px] bg-[#4285F4] rounded-full"></div>
                     <div>
-                        <div className="text-[16px] font-bold text-black">Commute to Work</div>
-                        <div className="text-[14px] text-black/60">8:30 AM • Rain ending</div>
+                        <div className="text-[15px] font-bold text-black">Commute to Work</div>
+                        <div className="text-[13px] text-black/60">8:30 AM • Rain ending</div>
                     </div>
                 </div>
-                 <div className="flex gap-4 items-center">
-                    <div className="w-[4px] h-[40px] bg-[#34A853] rounded-full"></div>
+                 <div className="flex gap-3 items-center">
+                    <div className="w-[4px] h-[32px] bg-[#34A853] rounded-full"></div>
                     <div>
-                        <div className="text-[16px] font-bold text-black">Lunch with Sarah</div>
-                        <div className="text-[14px] text-black/60">1:00 PM • Sunny</div>
+                        <div className="text-[15px] font-bold text-black">Lunch with Sarah</div>
+                        <div className="text-[13px] text-black/60">1:00 PM • Sunny</div>
                     </div>
                 </div>
              </div>
         </div>
         
         {error && (
-            <div className="mt-4 flex items-center gap-2 text-[#D0021B]">
-                <AlertCircle size={18} />
-                <span className="text-[14px] font-bold">{error}</span>
+            <div className="mt-3 flex items-center gap-2 text-[#D0021B]">
+                <AlertCircle size={16} />
+                <span className="text-[13px] font-bold">{error}</span>
             </div>
         )}
       </div>
 
-      <div className="space-y-3 mb-4">
+      <div className="space-y-2 pb-4">
         {isMockMode && (
-           <div className="flex items-center justify-center gap-2 mb-2 px-4 text-center">
-              <Info size={14} className="text-black/40 shrink-0" />
-              <span className="text-[11px] font-medium text-black/40">Demo Mode: No real account required</span>
+           <div className="flex items-center justify-center gap-2 mb-1 px-4 text-center">
+              <Info size={12} className="text-black/40 shrink-0" />
+              <span className="text-[10px] font-medium text-black/40">Demo Mode: No real account required</span>
            </div>
         )}
         
         <Button onClick={handleConnect} disabled={isConnecting}>
             {isConnecting ? (
                 <span className="flex items-center gap-2">
-                    <Loader2 className="animate-spin" size={20} /> Connecting...
+                    <Loader2 className="animate-spin" size={18} /> Connecting...
                 </span>
             ) : (
                 <span className="flex items-center gap-2">
-                    <Calendar size={20} /> Connect Google Calendar
+                    <Calendar size={18} /> Connect Google Calendar
                 </span>
             )}
         </Button>

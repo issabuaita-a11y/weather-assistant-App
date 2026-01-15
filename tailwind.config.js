@@ -11,6 +11,10 @@ export default {
       fontFamily: {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       },
+      screens: {
+        'mobile-lg': '376px',
+        'mobile-xl': '429px',
+      },
     },
   },
   plugins: [],

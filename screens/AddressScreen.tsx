@@ -216,14 +216,14 @@ export const AddressScreen: React.FC<Props> = ({ data, updateData, onNext, onSki
 
   return (
     <ScreenLayout step={1} onSkip={onSkip} theme="peach">
-      <div className="flex-1 pt-8">
-        <h1 className="text-[56px] font-black text-black leading-[0.95] tracking-tighter mb-12">
+      <div className="flex-1 pt-4 mobile-lg:pt-6">
+        <h1 className="text-[36px] mobile-lg:text-[40px] font-black text-black leading-[0.95] tracking-tighter mb-6 mobile-lg:mb-7">
           Where do<br />you live?
         </h1>
 
-        <div className="relative z-50 mb-8">
+        <div className="relative z-50 mb-6">
           <Input 
-            icon={isLoading ? <Loader2 className="animate-spin text-black/50" size={24} /> : <Search size={24} />} 
+            icon={isLoading ? <Loader2 className="animate-spin text-black/50" size={20} /> : <Search size={20} />} 
             placeholder="Search city or address..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -241,7 +241,7 @@ export const AddressScreen: React.FC<Props> = ({ data, updateData, onNext, onSki
                       onClick={() => handleSelectLocation(item)}
                       className="px-6 py-4 border-b border-black/5 active:bg-black/5 cursor-pointer last:border-0 hover:bg-black/5 transition-colors"
                     >
-                      <span className="text-[18px] font-bold text-black block truncate">
+                      <span className="text-[16px] font-bold text-black block truncate">
                         {primary}
                       </span>
                       {secondary && (
@@ -270,7 +270,7 @@ export const AddressScreen: React.FC<Props> = ({ data, updateData, onNext, onSki
         </button>
       </div>
 
-      <div className="mb-4">
+      <div className="pb-4">
         <Button onClick={onNext} disabled={!data.homeLocation}>
           Next
         </Button>

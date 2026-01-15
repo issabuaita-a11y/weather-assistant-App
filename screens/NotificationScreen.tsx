@@ -47,35 +47,35 @@ export const NotificationScreen: React.FC<Props> = ({ data, updateData, onNext, 
 
   return (
     <ScreenLayout step={4} showBack onBack={onBack} theme="peach">
-      <div className="flex-1 pt-8">
-        <h1 className="text-[56px] font-black text-black leading-[0.95] tracking-tighter mb-8">
+      <div className="flex-1 pt-4 mobile-lg:pt-6">
+        <h1 className="text-[36px] mobile-lg:text-[40px] font-black text-black leading-[0.95] tracking-tighter mb-4 mobile-lg:mb-5">
           Never<br />Get Soaked.
         </h1>
         
-        <p className="text-[24px] font-bold text-black/80 mb-12 leading-tight">
+        <p className="text-[16px] mobile-lg:text-[17px] font-bold text-black/80 mb-6 mobile-lg:mb-7 leading-tight">
           Timely reminders so you always know when to bring an umbrella.
         </p>
 
-        <div className="flex flex-col gap-4">
-            <div className="bg-white/40 backdrop-blur-sm p-6 rounded-[24px] border border-white/50 flex gap-4 items-center">
-                <Bell className="text-black shrink-0" size={24} />
+        <div className="flex flex-col gap-2.5">
+            <div className="bg-white/40 backdrop-blur-sm p-3 rounded-[24px] border border-white/50 flex gap-3 items-center">
+                <Bell className="text-black shrink-0" size={18} />
                 <div>
-                    <div className="text-[16px] font-bold text-black">Morning Briefing</div>
-                    <div className="text-[14px] text-black/60">Daily forecast at 7:00 AM</div>
+                    <div className="text-[15px] font-bold text-black">Morning Briefing</div>
+                    <div className="text-[13px] text-black/60">Daily forecast at 7:00 AM</div>
                 </div>
             </div>
             
-            <div className="bg-white/40 backdrop-blur-sm p-6 rounded-[24px] border border-white/50 flex gap-4 items-center opacity-60">
-                <div className="w-6 h-6 rounded-full border-2 border-black/20" />
+            <div className="bg-white/40 backdrop-blur-sm p-3 rounded-[24px] border border-white/50 flex gap-3 items-center opacity-60">
+                <div className="w-4 h-4 rounded-full border-2 border-black/20" />
                 <div>
-                    <div className="text-[16px] font-bold text-black">Rain Alerts</div>
-                    <div className="text-[14px] text-black/60">15 min before precipitation</div>
+                    <div className="text-[15px] font-bold text-black">Rain Alerts</div>
+                    <div className="text-[13px] text-black/60">15 min before precipitation</div>
                 </div>
             </div>
         </div>
       </div>
 
-      <div className="space-y-3 mb-4">
+      <div className="space-y-2 pb-4">
         <Button onClick={handleEnable}>Enable Notifications</Button>
         <Button variant="ghost" onClick={onNext}>Maybe Later</Button>
       </div>

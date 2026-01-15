@@ -19,15 +19,15 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props 
 }) => {
-  const baseStyles = "flex items-center justify-center font-bold text-[18px] tracking-tight transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100";
+  const baseStyles = "flex items-center justify-center font-bold text-[16px] mobile-lg:text-[17px] tracking-tight transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100";
   
   const variants = {
     // Solid Black Pill
-    primary: `h-[64px] rounded-full bg-black text-white shadow-xl ${className}`,
+    primary: `h-[56px] mobile-lg:h-[60px] rounded-full bg-black text-white shadow-xl ${className}`,
     // Outline Black
-    secondary: `h-[56px] rounded-full border-2 border-black/10 bg-white/20 text-black backdrop-blur-sm ${className}`,
+    secondary: `h-[52px] mobile-lg:h-[56px] rounded-full border-2 border-black/10 bg-white/20 text-black backdrop-blur-sm ${className}`,
     // Text only
-    ghost: `h-[44px] bg-transparent text-black/60 hover:text-black ${className}`,
+    ghost: `h-[44px] mobile-lg:h-[48px] bg-transparent text-black/60 hover:text-black ${className}`,
   };
 
   return (
@@ -55,7 +55,7 @@ export const Input: React.FC<InputProps> = ({ icon, className = '', ...props }) 
         </div>
       )}
       <input
-        className={`w-full h-[64px] bg-transparent border-b-2 border-black/20 text-[24px] font-bold text-black placeholder-black/30 outline-none transition-all focus:border-black ${
+        className={`w-full h-[56px] mobile-lg:h-[60px] bg-transparent border-b-2 border-black/20 text-[20px] mobile-lg:text-[22px] font-bold text-black placeholder-black/30 outline-none transition-all focus:border-black ${
           icon ? 'pl-10' : 'pl-0'
         }`}
         {...props}
@@ -93,15 +93,15 @@ export const ScreenLayout: React.FC<ScreenLayoutProps> = ({
   theme = 'blue'
 }) => {
   return (
-    <div className={`relative flex flex-col h-full min-h-screen w-full overflow-hidden ${gradients[theme]} text-black`}>
+    <div className={`relative flex flex-col w-full overflow-hidden viewport-height ${gradients[theme]} text-black`}>
       {/* Dynamic Background Noise/Texture Overlay (Optional) */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
 
       {/* Safe Area Top */}
-      <div className="pt-[calc(env(safe-area-inset-top)+24px)] px-8 flex-1 flex flex-col relative z-10">
+      <div className="pt-[calc(env(safe-area-inset-top)+16px)] px-8 flex-1 flex flex-col relative z-10 min-h-0">
         
         {/* Minimal Header */}
-        <div className="h-[40px] flex items-center justify-between w-full mb-4">
+        <div className="h-[36px] flex items-center justify-between w-full mb-3">
           <div className="flex items-center">
             {showBack && onBack && (
               <button 
@@ -113,38 +113,23 @@ export const ScreenLayout: React.FC<ScreenLayoutProps> = ({
             )}
           </div>
           
-          <div className="flex items-center gap-2">
-             {onSkip && (
+          <div className="flex items-center gap-3">
+            {step !== undefined && step > 0 && (
+              <span className="text-[14px] font-bold text-black/60">
+                {step}<span className="text-black/30">/</span>{totalSteps}
+              </span>
+            )}
+            {onSkip && (
               <button onClick={onSkip} className="text-[14px] font-bold uppercase tracking-wider text-black/40">
                 Skip
               </button>
-             )}
+            )}
           </div>
         </div>
         
         {children}
       </div>
 
-      {/* Footer Area with Separator line (Like the reference image) */}
-      {(step !== undefined && step > 0) && (
-        <div className="pb-[calc(env(safe-area-inset-bottom)+32px)] px-8 relative z-10">
-           {/* Horizontal Line */}
-           <div className="w-full h-[2px] bg-black/10 mb-6" />
-           
-           <div className="flex justify-between items-end">
-              <div className="flex flex-col">
-                 <span className="text-[12px] font-bold uppercase tracking-widest text-black/40 mb-1">Progress</span>
-                 <span className="text-[32px] font-black leading-none tracking-tighter">
-                    {step}<span className="text-black/20">/</span>{totalSteps}
-                 </span>
-              </div>
-              
-              <div className="flex flex-col items-end">
-                {/* Could put contextual help or time here */}
-              </div>
-           </div>
-        </div>
-      )}
     </div>
   );
 };
