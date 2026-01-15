@@ -50,8 +50,13 @@ If this is your first time, you'll be asked to configure the OAuth consent scree
 4. Give it a name: **"Weather Assistant Web Client"**
 5. Under **"Authorized JavaScript origins"**, click **"+ ADD URI"** and add:
    - `http://localhost:3000` (for local development)
-   - `https://your-app-name.vercel.app` (your Vercel domain - add this after deployment)
-6. Under **"Authorized redirect URIs"** (if shown), you can leave it empty for now
+   - `https://your-app-name.vercel.app` (your Vercel production domain)
+   - `https://your-preview-url.vercel.app` (your Vercel preview URLs - add after first deployment)
+6. Under **"Authorized redirect URIs"**, click **"+ ADD URI"** and add the same URLs:
+   - `http://localhost:3000` (for local development)
+   - `https://your-app-name.vercel.app` (your Vercel production domain)
+   - `https://your-preview-url.vercel.app` (your Vercel preview URLs)
+   - **Note**: For Google Identity Services, you can also use `http://localhost:3000` and your Vercel domains
 7. Click **"Create"**
 
 ### Step 7: Copy Your Client ID
