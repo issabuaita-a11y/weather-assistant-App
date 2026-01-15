@@ -1,0 +1,7 @@
+{
+  "name": "Weather Assistant Onboarding",
+  "description": "A mobile-first onboarding flow for a personalized weather application.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
