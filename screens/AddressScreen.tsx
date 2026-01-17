@@ -8,6 +8,7 @@ interface Props {
   updateData: (data: Partial<OnboardingData>) => void;
   onNext: () => void;
   onSkip: () => void;
+  onBack: () => void;
 }
 
 // Photon API Response Types
@@ -33,7 +34,7 @@ interface PhotonResponse {
   features: PhotonFeature[];
 }
 
-export const AddressScreen: React.FC<Props> = ({ data, updateData, onNext, onSkip }) => {
+export const AddressScreen: React.FC<Props> = ({ data, updateData, onNext, onSkip, onBack }) => {
   const [query, setQuery] = useState(data.homeLocation?.address || '');
   const [suggestions, setSuggestions] = useState<PhotonFeature[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -215,7 +216,7 @@ export const AddressScreen: React.FC<Props> = ({ data, updateData, onNext, onSki
   };
 
   return (
-    <ScreenLayout step={1} onSkip={onSkip} theme="peach">
+    <ScreenLayout step={1} showBack onBack={onBack} onSkip={onSkip} theme="peach">
       <div className="flex-1 pt-4 mobile-lg:pt-6">
         <h1 className="text-[36px] mobile-lg:text-[40px] font-black text-black leading-[0.95] tracking-tighter mb-6 mobile-lg:mb-7">
           Where do<br />you live?
