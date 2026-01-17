@@ -14,12 +14,12 @@ export const WelcomeScreen: React.FC<Props> = ({ onNext }) => {
           <CloudSun className="w-16 h-16 mobile-lg:w-[72px] mobile-lg:h-[72px] text-black" strokeWidth={1.5} />
         </div>
         
-        <h1 className="text-[42px] mobile-lg:text-[46px] font-black text-black leading-[0.9] tracking-tighter mb-4 mobile-lg:mb-5">
+        <h1 className="text-[42px] mobile-lg:text-[46px] font-black text-black leading-[0.9] tracking-tighter mb-1 mobile-lg:mb-1.5">
           Welcome to anchor
         </h1>
         
-        <p className="text-[15px] mobile-lg:text-[16px] font-medium text-black/60 max-w-[280px] leading-tight">
-          Personalized weather forecast updates
+        <p className="text-[22px] font-medium text-black/60 max-w-[280px] leading-tight">
+          Weather for your schedule
         </p>
       </div>
       

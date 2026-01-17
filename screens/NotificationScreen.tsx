@@ -46,7 +46,7 @@ export const NotificationScreen: React.FC<Props> = ({ data, updateData, onNext, 
   };
 
   return (
-    <ScreenLayout step={4} showBack onBack={onBack} theme="peach">
+    <ScreenLayout step={3} totalSteps={4} showBack onBack={onBack} theme="peach">
       <div className="flex-1 pt-4 mobile-lg:pt-6">
         <h1 className="text-[36px] mobile-lg:text-[40px] font-black text-black leading-[0.95] tracking-tighter mb-4 mobile-lg:mb-5">
           Never<br />Get Soaked.

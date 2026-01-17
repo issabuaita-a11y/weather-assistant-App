@@ -73,7 +73,14 @@ export default function App() {
   };
 
   const nextStep = () => {
-    setStep(prev => Math.min(prev + 1, ScreenStep.Completion));
+    setStep(prev => {
+      const next = prev + 1;
+      // Skip LocationPermission step (merged into Address)
+      if (next === ScreenStep.LocationPermission) {
+        return ScreenStep.Calendar;
+      }
+      return Math.min(next, ScreenStep.Completion);
+    });
   };
 
   const prevStep = () => {
@@ -109,7 +116,9 @@ export default function App() {
       case ScreenStep.Address:
         return <AddressScreen {...commonProps} onSkip={nextStep} />;
       case ScreenStep.LocationPermission:
-        return <LocationPermissionScreen {...commonProps} />;
+        // Skip LocationPermission step - merged into Address screen
+        // This should never be reached due to nextStep() logic, but handle it just in case
+        return <CalendarScreen {...commonProps} />;
       case ScreenStep.Calendar:
         return <CalendarScreen {...commonProps} />;
       case ScreenStep.Notifications:

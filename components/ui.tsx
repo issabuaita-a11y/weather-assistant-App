@@ -55,7 +55,7 @@ export const Input: React.FC<InputProps> = ({ icon, className = '', ...props }) 
         </div>
       )}
       <input
-        className={`w-full h-[56px] mobile-lg:h-[60px] bg-transparent border-b-2 border-black/20 text-[20px] mobile-lg:text-[22px] font-bold text-black placeholder-black/30 outline-none transition-all focus:border-black ${
+        className={`w-full h-[56px] mobile-lg:h-[60px] bg-transparent border-b-2 border-black/20 text-[20px] mobile-lg:text-[22px] font-bold text-black placeholder:text-[16px] placeholder-black/30 outline-none transition-all focus:border-black ${
           icon ? 'pl-10' : 'pl-0'
         }`}
         {...props}

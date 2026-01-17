@@ -33,7 +33,7 @@ export const FeaturesScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
   };
 
   return (
-    <ScreenLayout step={5} showBack onBack={onBack} theme="purple">
+    <ScreenLayout step={4} totalSteps={4} showBack onBack={onBack} theme="purple">
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex-1 pt-2 mobile-lg:pt-4 overflow-y-auto no-scrollbar pb-24">
           <h1 className="text-[36px] mobile-lg:text-[40px] font-black text-black leading-[0.95] tracking-tighter mb-1 mobile-lg:mb-2">

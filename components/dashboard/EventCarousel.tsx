@@ -27,7 +27,7 @@ export const EventCarousel: React.FC<EventCarouselProps> = ({ events }) => {
   return (
     <div className="relative w-full h-full flex flex-col min-h-0">
       {/* Carousel Container - Full screen swipeable area */}
-      <div className="flex-1 relative overflow-hidden min-h-0">
+      <div className="flex-1 relative overflow-hidden min-h-0 flex items-center">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={currentIndex}
@@ -39,12 +39,10 @@ export const EventCarousel: React.FC<EventCarouselProps> = ({ events }) => {
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.2}
             onDragEnd={handleDragEnd}
-            className="absolute inset-0 w-full h-full px-8 pb-12"
+            className="w-full px-8"
             style={{ touchAction: 'pan-x' }}
           >
-            <div className="w-full h-full">
-              <EventWeatherCard event={events[currentIndex]} index={currentIndex} />
-            </div>
+            <EventWeatherCard event={events[currentIndex]} index={currentIndex} />
           </motion.div>
         </AnimatePresence>
       </div>

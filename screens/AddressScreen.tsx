@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Loader2 } from 'lucide-react';
+import { Search, MapPin, Loader2, Lock, Map } from 'lucide-react';
 import { ScreenLayout, Button, Input } from '../components/ui';
 import { OnboardingData } from '../types';
 
@@ -247,62 +247,77 @@ export const AddressScreen: React.FC<Props> = ({ data, updateData, onNext, onSki
   };
 
   return (
-    <ScreenLayout step={1} showBack onBack={onBack} onSkip={onSkip} theme="peach">
-      <div className="flex-1 pt-4 mobile-lg:pt-6">
-        <h1 className="text-[36px] mobile-lg:text-[40px] font-black text-black leading-[0.95] tracking-tighter mb-6 mobile-lg:mb-7">
-          Where do<br />you live?
-        </h1>
+    <ScreenLayout step={1} totalSteps={4} showBack onBack={onBack} onSkip={onSkip} theme="purple">
+      <div className="flex-1 flex flex-col pt-4 mobile-lg:pt-6">
+        {/* Top Section: Title */}
+        <div className="mb-6 mobile-lg:mb-8">
+          <h1 className="text-[36px] mobile-lg:text-[40px] font-black text-black leading-[0.95] tracking-tighter mb-4 mobile-lg:mb-5">
+            Where do<br />you live?
+          </h1>
 
-        <div className="relative z-50 mb-6">
-          <Input 
-            icon={isLoading ? <Loader2 className="animate-spin text-black/50" size={20} /> : <Search size={20} />} 
-            placeholder="Search city or address..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            autoFocus
-          />
-          
-          {suggestions.length > 0 && (
-            <div className="absolute top-[70px] left-0 right-0 bg-white/90 backdrop-blur-xl border-2 border-black/5 rounded-[24px] overflow-hidden shadow-2xl z-50 max-h-[300px] overflow-y-auto">
-              {suggestions.map((item, idx) => {
-                 const { primary, secondary } = formatDisplay(item.properties);
-                 
-                 return (
-                    <div 
-                      key={idx} // Photon doesn't always have unique IDs for fuzzy results, idx is safe here
-                      onClick={() => handleSelectLocation(item)}
-                      className="px-6 py-4 border-b border-black/5 active:bg-black/5 cursor-pointer last:border-0 hover:bg-black/5 transition-colors"
-                    >
-                      <span className="text-[16px] font-bold text-black block truncate">
-                        {primary}
-                      </span>
-                      {secondary && (
-                        <span className="text-[14px] text-black/50 block truncate">
-                          {secondary}
-                        </span>
-                      )}
-                    </div>
-                 );
-              })}
-            </div>
-          )}
+          {/* Description - Under title */}
+          <p className="text-[16px] mobile-lg:text-[17px] font-bold text-black/80 leading-tight">
+            Get notified exactly when rain starts at your spot.
+          </p>
         </div>
 
-        <button 
-          onClick={handleCurrentLocation}
-          disabled={isGettingLocation}
-          className="flex items-center gap-2 text-black/60 font-semibold hover:text-black transition-colors disabled:opacity-50"
-        >
-          {isGettingLocation ? (
-            <Loader2 className="animate-spin" size={20} />
-          ) : (
-            <MapPin size={20} />
-          )}
-          <span>{isGettingLocation ? 'Detecting...' : 'Use current location'}</span>
-        </button>
+        {/* Middle Section: Input and Location Button */}
+        <div className="flex-shrink-0">
+          <div className="relative z-50 mb-2">
+            <Input 
+              icon={isLoading ? <Loader2 className="animate-spin text-black/50" size={20} /> : <Search size={20} />} 
+              placeholder="Search city or address..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              autoFocus
+            />
+            
+            {suggestions.length > 0 && (
+              <div className="absolute top-[70px] left-0 right-0 bg-white/90 backdrop-blur-xl border-2 border-black/5 rounded-[24px] overflow-hidden shadow-2xl z-50 max-h-[300px] overflow-y-auto">
+                {suggestions.map((item, idx) => {
+                   const { primary, secondary } = formatDisplay(item.properties);
+                   
+                   return (
+                      <div 
+                        key={idx} // Photon doesn't always have unique IDs for fuzzy results, idx is safe here
+                        onClick={() => handleSelectLocation(item)}
+                        className="px-6 py-4 border-b border-black/5 active:bg-black/5 cursor-pointer last:border-0 hover:bg-black/5 transition-colors"
+                      >
+                        <span className="text-[16px] font-bold text-black block truncate">
+                          {primary}
+                        </span>
+                        {secondary && (
+                          <span className="text-[14px] text-black/50 block truncate">
+                            {secondary}
+                          </span>
+                        )}
+                      </div>
+                   );
+                })}
+              </div>
+            )}
+          </div>
+
+          <button 
+            onClick={handleCurrentLocation}
+            disabled={isGettingLocation}
+            className="flex items-center gap-2 text-black/60 font-semibold hover:text-black transition-colors disabled:opacity-50"
+          >
+            {isGettingLocation ? (
+              <Loader2 className="animate-spin" size={20} />
+            ) : (
+              <MapPin size={20} />
+            )}
+            <span>{isGettingLocation ? 'Detecting...' : 'Use current location'}</span>
+          </button>
+        </div>
       </div>
 
-      <div className="pb-4">
+      <div className="space-y-2 pb-4">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Lock size={12} className="text-black/40" />
+          <span className="text-[11px] font-semibold text-black/40 uppercase tracking-widest">Private & Secure</span>
+        </div>
         <Button onClick={onNext} disabled={!data.homeLocation}>
           Next
         </Button>

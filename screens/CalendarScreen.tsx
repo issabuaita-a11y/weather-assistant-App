@@ -216,7 +216,7 @@ export const CalendarScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
   };
 
   return (
-    <ScreenLayout step={3} showBack onBack={onBack} theme="blue">
+    <ScreenLayout step={2} totalSteps={4} showBack onBack={onBack} theme="blue">
       <div className="flex-1 pt-4 mobile-lg:pt-6">
         <h1 className="text-[36px] mobile-lg:text-[40px] font-black text-black leading-[0.95] tracking-tighter mb-4 mobile-lg:mb-5">
           Your<br />Schedule.

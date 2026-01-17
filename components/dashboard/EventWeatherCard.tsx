@@ -219,7 +219,7 @@ export const EventWeatherCard: React.FC<{ event: EnrichedEvent; index: number }>
   const eventTempMax = eventTemps.length > 0 ? Math.max(...eventTemps) : weather?.temp;
 
   return (
-    <div className={`${gradient} rounded-[24px] p-4 shadow-lg border border-white/30 w-full h-full flex flex-col overflow-y-auto overflow-x-hidden`}>
+    <div className={`${gradient} rounded-[24px] p-4 pb-5 shadow-lg border border-white/30 w-full h-auto flex flex-col overflow-x-hidden`}>
       {/* Event Header */}
       <div className="mb-4">
         <h2 className="text-[16px] mobile-lg:text-[18px] font-black text-black leading-tight mb-1">
@@ -240,9 +240,9 @@ export const EventWeatherCard: React.FC<{ event: EnrichedEvent; index: number }>
         <>
           {/* SMART TIPS SECTION - HERO */}
           {event.suggestions.length > 0 && (
-            <div className="mb-4">
-              <div className="text-[16px] mobile-lg:text-[18px] font-black text-black mb-3 flex items-center gap-2">
-                <span className="text-[18px]">💡</span>
+            <div className="mb-3 p-3 bg-white/40 backdrop-blur-sm rounded-[16px] border border-white/50">
+              <div className="text-[12px] font-bold text-black/70 mb-2 flex items-center gap-2">
+                <span className="text-[14px]">💡</span>
                 <span>What to Bring</span>
               </div>
               <div className="space-y-2.5">
