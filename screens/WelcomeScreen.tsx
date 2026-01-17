@@ -15,13 +15,11 @@ export const WelcomeScreen: React.FC<Props> = ({ onNext }) => {
         </div>
         
         <h1 className="text-[42px] mobile-lg:text-[46px] font-black text-black leading-[0.9] tracking-tighter mb-4 mobile-lg:mb-5">
-          Your<br />
-          Weather<br />
-          Assistant.
+          Welcome to anchor
         </h1>
         
         <p className="text-[15px] mobile-lg:text-[16px] font-medium text-black/60 max-w-[280px] leading-tight">
-          Personalized forecasts that actually matter to your daily routine.
+          Personalized weather forecast updates
         </p>
       </div>
       
