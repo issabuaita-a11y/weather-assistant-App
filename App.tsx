@@ -18,6 +18,12 @@ export default function App() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    // In development mode, skip localStorage to always start fresh
+    if (import.meta.env.DEV) {
+      setLoaded(true);
+      return;
+    }
+
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
@@ -55,7 +61,8 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!loaded) return;
+    // Only persist to localStorage in production
+    if (!loaded || import.meta.env.DEV) return;
     const dataToSave = { ...data, currentStep: step };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
   }, [data, step, loaded]);
