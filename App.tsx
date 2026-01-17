@@ -8,6 +8,7 @@ import { CalendarScreen } from './screens/CalendarScreen';
 import { NotificationScreen } from './screens/NotificationScreen';
 import { FeaturesScreen } from './screens/FeaturesScreen';
 import { CompletionScreen } from './screens/CompletionScreen';
+import { Dashboard } from './components/dashboard/Dashboard';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const STORAGE_KEY = 'weather_app_onboarding_v2';
@@ -47,9 +48,9 @@ export default function App() {
             }
         }));
 
-        if (parsed.completed) {
-            setStep(ScreenStep.Completion);
-        } else if (typeof parsed.currentStep === 'number') {
+        // If onboarding is completed, we'll show Dashboard (handled in render)
+        // Otherwise, restore the step they were on
+        if (!parsed.completed && typeof parsed.currentStep === 'number') {
             setStep(parsed.currentStep);
         }
       } catch (e) {
@@ -81,11 +82,18 @@ export default function App() {
 
   const completeOnboarding = () => {
     updateData({ completed: true });
-    // In a real app, this would redirect or mount the main app
-    alert("Onboarding Complete! Welcome to the new experience.");
   };
 
   if (!loaded) return null;
+
+  // Show Dashboard if onboarding is completed
+  if (data.completed) {
+    return (
+      <div className="bg-black min-h-screen w-full flex items-center justify-center font-sans overflow-hidden">
+        <Dashboard />
+      </div>
+    );
+  }
 
   const renderScreen = () => {
     const commonProps = {

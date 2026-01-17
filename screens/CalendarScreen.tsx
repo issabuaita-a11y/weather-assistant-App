@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar, CheckCircle2, AlertCircle, Loader2, Info } from 'lucide-react';
 import { ScreenLayout, Button } from '../components/ui';
 import { OnboardingData, CalendarEvent } from '../types';
@@ -19,50 +19,50 @@ export const CalendarScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
 
   const isMockMode = GOOGLE_AUTH_CONFIG.clientId === 'YOUR_GOOGLE_CLIENT_ID_HERE';
 
+  // Debug: Log client ID status (only in dev)
   useEffect(() => {
-    // Robust check for Google Identity Services SDK
-    let intervalId: ReturnType<typeof setInterval>;
-    
-    const checkGsi = () => {
-      if (typeof window !== 'undefined' && (window as any).google && (window as any).google.accounts) {
-        setIsSdkLoaded(true);
-        try {
-          const client = (window as any).google.accounts.oauth2.initTokenClient({
-            client_id: GOOGLE_AUTH_CONFIG.clientId,
-            scope: GOOGLE_AUTH_CONFIG.scope,
-            callback: (response: any) => {
-              if (response.error) {
-                console.error("Auth error:", response);
-                setError("Authentication failed. Please try again.");
-                setIsConnecting(false);
-                return;
-              }
-              handleAuthSuccess(response);
-            },
-          });
-          setTokenClient(client);
-        } catch (err) {
-            console.error("GSI Init Error", err);
-        }
-        return true;
+    if (import.meta.env.DEV) {
+      console.log('Google OAuth Config:', {
+        clientId: GOOGLE_AUTH_CONFIG.clientId ? 
+          `${GOOGLE_AUTH_CONFIG.clientId.substring(0, 20)}...` : 
+          'NOT SET',
+        isMockMode,
+        scope: GOOGLE_AUTH_CONFIG.scope,
+      });
+      if (isMockMode) {
+        console.warn('⚠️ Google Client ID not configured. OAuth will not work. Set VITE_GOOGLE_CLIENT_ID in .env file.');
       }
-      return false;
-    };
+    }
+  }, [isMockMode]);
 
-    if (!checkGsi()) {
-      intervalId = setInterval(() => {
-        if (checkGsi()) clearInterval(intervalId);
-      }, 500);
+  const handleAuthSuccess = useCallback(async (tokenResponse: any) => {
+    const STORAGE_KEY = 'weather_app_onboarding_v2';
+    const accessToken = tokenResponse.access_token;
+
+    // CRITICAL: Save token to localStorage immediately (even in dev mode)
+    // This ensures the token persists before the dashboard tries to read it
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      const existingData = stored ? JSON.parse(stored) : {};
+      const updatedData = {
+        ...existingData,
+        calendarToken: accessToken,
+        permissions: {
+          ...INITIAL_ONBOARDING_DATA.permissions,
+          ...(existingData.permissions || {}),
+          ...(data.permissions || {}),
+          calendar: true,
+        },
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
+      console.log('✅ Calendar token saved to localStorage');
+    } catch (err) {
+      console.error('Failed to save token to localStorage:', err);
     }
 
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, []);
-
-  const handleAuthSuccess = async (tokenResponse: any) => {
+    // Also update React state (for UI updates)
     updateData({ 
-        calendarToken: tokenResponse.access_token,
+        calendarToken: accessToken,
         permissions: { 
             ...INITIAL_ONBOARDING_DATA.permissions,
             ...(data.permissions || {}),
@@ -72,8 +72,21 @@ export const CalendarScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
 
     try {
       // Fetch upcoming events
-      const events = await fetchEvents(tokenResponse.access_token);
+      const events = await fetchEvents(accessToken);
       updateData({ calendarEvents: events });
+      
+      // Also save events to localStorage
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        const existingData = stored ? JSON.parse(stored) : {};
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          ...existingData,
+          calendarEvents: events,
+        }));
+      } catch (err) {
+        console.error('Failed to save events to localStorage:', err);
+      }
+      
       setIsConnecting(false);
       onNext();
     } catch (err) {
@@ -82,7 +95,7 @@ export const CalendarScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
       setIsConnecting(false);
       onNext();
     }
-  };
+  }, [updateData, data.permissions, onNext]);
 
   const fetchEvents = async (accessToken: string): Promise<CalendarEvent[]> => {
     const now = new Date().toISOString();
@@ -99,6 +112,67 @@ export const CalendarScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
     const data = await response.json();
     return data.items || [];
   };
+
+  useEffect(() => {
+    // Robust check for Google Identity Services SDK
+    let intervalId: ReturnType<typeof setInterval>;
+    let timeoutId: ReturnType<typeof setTimeout>;
+    
+    const checkGsi = () => {
+      if (typeof window !== 'undefined' && (window as any).google && (window as any).google.accounts) {
+        setIsSdkLoaded(true);
+        try {
+          // Validate client ID before initializing
+          if (GOOGLE_AUTH_CONFIG.clientId === 'YOUR_GOOGLE_CLIENT_ID_HERE' || !GOOGLE_AUTH_CONFIG.clientId) {
+            setError("Google Client ID not configured. Please set VITE_GOOGLE_CLIENT_ID in your .env file.");
+            return true;
+          }
+
+          const client = (window as any).google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_AUTH_CONFIG.clientId,
+            scope: GOOGLE_AUTH_CONFIG.scope,
+            callback: (response: any) => {
+              if (response.error) {
+                console.error("Auth error:", response);
+                setError(`Authentication failed: ${response.error || 'Unknown error'}`);
+                setIsConnecting(false);
+                return;
+              }
+              handleAuthSuccess(response);
+            },
+          });
+          setTokenClient(client);
+          return true;
+        } catch (err: any) {
+          console.error("GSI Init Error", err);
+          setError(`Failed to initialize Google Sign-In: ${err.message || 'Unknown error'}`);
+          return true; // Stop polling on error
+        }
+      }
+      return false;
+    };
+
+    if (!checkGsi() && !isMockMode) {
+      // Poll for SDK with timeout
+      let attempts = 0;
+      const maxAttempts = 20; // 10 seconds max (20 * 500ms)
+      
+      intervalId = setInterval(() => {
+        attempts++;
+        if (checkGsi() || attempts >= maxAttempts) {
+          clearInterval(intervalId);
+          if (attempts >= maxAttempts && !isSdkLoaded) {
+            setError("Google Sign-In SDK failed to load. Please refresh the page.");
+          }
+        }
+      }, 500);
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [isMockMode, isSdkLoaded, handleAuthSuccess]);
 
   const handleConnect = () => {
     setError(null);
@@ -120,13 +194,25 @@ export const CalendarScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
       return;
     }
 
-    if (!tokenClient) {
-      setError("Google Sign-In is not ready. Please check your connection.");
+    if (!isSdkLoaded) {
+      setError("Google Sign-In SDK is still loading. Please wait a moment and try again.");
       setIsConnecting(false);
       return;
     }
 
-    tokenClient.requestAccessToken();
+    if (!tokenClient) {
+      setError("Google Sign-In is not ready. Please check your connection and refresh the page.");
+      setIsConnecting(false);
+      return;
+    }
+
+    try {
+      tokenClient.requestAccessToken();
+    } catch (err: any) {
+      console.error("Failed to request access token:", err);
+      setError(`Failed to start authentication: ${err.message || 'Unknown error'}`);
+      setIsConnecting(false);
+    }
   };
 
   return (
@@ -166,6 +252,13 @@ export const CalendarScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
                 <span className="text-[13px] font-bold">{error}</span>
             </div>
         )}
+
+        {!isMockMode && !isSdkLoaded && !error && (
+          <div className="mt-3 flex items-center gap-2 text-black/60">
+            <Loader2 className="animate-spin" size={16} />
+            <span className="text-[13px] font-medium">Loading Google Sign-In...</span>
+          </div>
+        )}
       </div>
 
       <div className="space-y-2 pb-4">
@@ -174,6 +267,13 @@ export const CalendarScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
               <Info size={12} className="text-black/40 shrink-0" />
               <span className="text-[10px] font-medium text-black/40">Demo Mode: No real account required</span>
            </div>
+        )}
+        
+        {!isMockMode && !isSdkLoaded && (
+          <div className="flex items-center justify-center gap-2 mb-1 px-4 text-center">
+            <Info size={12} className="text-black/40 shrink-0" />
+            <span className="text-[10px] font-medium text-black/40">Waiting for Google Sign-In to load...</span>
+          </div>
         )}
         
         <Button onClick={handleConnect} disabled={isConnecting}>

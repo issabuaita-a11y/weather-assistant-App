@@ -21,6 +21,7 @@ export interface WeatherFeatures {
   airQuality: boolean;
   visibility: boolean;
   pressure: boolean;
+  feelsLike: boolean;
 }
 
 export interface CalendarEvent {
@@ -28,6 +29,7 @@ export interface CalendarEvent {
   summary: string;
   start: { dateTime?: string; date?: string };
   location?: string;
+  calendarName?: string; // Optional: calendar name for filtering
 }
 
 export interface OnboardingData {

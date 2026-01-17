@@ -44,6 +44,7 @@ export const INITIAL_ONBOARDING_DATA: OnboardingData = {
     airQuality: false,
     visibility: false,
     pressure: false,
+    feelsLike: false,
   },
 };
 

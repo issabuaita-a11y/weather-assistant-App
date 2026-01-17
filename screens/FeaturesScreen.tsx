@@ -1,5 +1,5 @@
 import React from 'react';
-import { Thermometer, Clock, CloudRain, Sun, Sunrise, Wind, Droplets, Activity, Eye, Gauge } from 'lucide-react';
+import { Thermometer, Sun, Sunrise, Wind, Droplets, Activity, Eye, CloudRain, Gauge } from 'lucide-react';
 import { ScreenLayout, Button, Toggle } from '../components/ui';
 import { OnboardingData, WeatherFeatures } from '../types';
 import { ESSENTIAL_FEATURES, INITIAL_ONBOARDING_DATA } from '../constants';
@@ -11,13 +11,15 @@ interface Props {
   onBack: () => void;
 }
 
-const FEATURE_CONFIG: { key: keyof WeatherFeatures; label: string; icon: React.ReactNode }[] = [
-    { key: 'uvIndex', label: 'UV Index', icon: <Sun size={20} /> },
-    { key: 'sunriseSunset', label: 'Sunrise', icon: <Sunrise size={20} /> },
-    { key: 'windSpeed', label: 'Wind', icon: <Wind size={20} /> },
-    { key: 'humidity', label: 'Humidity', icon: <Droplets size={20} /> },
-    { key: 'airQuality', label: 'Air Quality', icon: <Activity size={20} /> },
-    { key: 'visibility', label: 'Visibility', icon: <Eye size={20} /> },
+const FEATURE_CONFIG: { key: keyof WeatherFeatures; label: string; icon: React.ReactNode; emoji: string }[] = [
+    { key: 'uvIndex', label: 'UV Index', icon: <Sun size={20} />, emoji: '☀️' },
+    { key: 'sunriseSunset', label: 'Sunrise', icon: <Sunrise size={20} />, emoji: '🌅' },
+    { key: 'windSpeed', label: 'Wind', icon: <Wind size={20} />, emoji: '💨' },
+    { key: 'humidity', label: 'Humidity', icon: <Droplets size={20} />, emoji: '💧' },
+    { key: 'precipitation', label: 'Precipitation', icon: <CloudRain size={20} />, emoji: '🌧️' },
+    { key: 'airQuality', label: 'Air Quality', icon: <Activity size={20} />, emoji: '🫧' },
+    { key: 'visibility', label: 'Visibility', icon: <Eye size={20} />, emoji: '👁️' },
+    { key: 'feelsLike', label: 'Feels Like', icon: <Gauge size={20} />, emoji: '🌡️' },
 ];
 
 export const FeaturesScreen: React.FC<Props> = ({ data, updateData, onNext, onBack }) => {
@@ -35,7 +37,7 @@ export const FeaturesScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
       <div className="flex-1 flex flex-col min-h-0">
         <div className="flex-1 pt-2 mobile-lg:pt-4 overflow-y-auto no-scrollbar pb-24">
           <h1 className="text-[36px] mobile-lg:text-[40px] font-black text-black leading-[0.95] tracking-tighter mb-1 mobile-lg:mb-2">
-            What Matters?
+            Select Your Preferences
           </h1>
           <p className="text-[14px] mobile-lg:text-[15px] font-bold text-black/60 mb-4 mobile-lg:mb-5">
               Customize your dashboard.
@@ -45,7 +47,7 @@ export const FeaturesScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
               {/* Essential (Static) */}
               <div className="p-4 mobile-lg:p-5 rounded-[24px] bg-black/5 border border-black/5 flex items-center justify-between opacity-50">
                   <div className="flex items-center gap-4">
-                      <Thermometer size={20} className="text-black mobile-lg:w-5 mobile-lg:h-5" />
+                      <span className="text-[20px]">☀️</span>
                       <span className="text-[16px] mobile-lg:text-[17px] font-bold text-black">Essentials</span>
                   </div>
                   <span className="text-[12px] font-bold uppercase tracking-wider text-black/40">Active</span>
@@ -55,7 +57,7 @@ export const FeaturesScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
                {FEATURE_CONFIG.map((item) => (
                   <div key={item.key} className="p-4 mobile-lg:p-5 rounded-[24px] bg-white/40 border border-white/50 backdrop-blur-sm flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                          <div className="text-black">{item.icon}</div>
+                          <span className="text-[20px]">{item.emoji}</span>
                           <span className="text-[16px] mobile-lg:text-[17px] font-bold text-black">{item.label}</span>
                       </div>
                       <Toggle 

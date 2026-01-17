@@ -39,7 +39,7 @@ export const CompletionScreen: React.FC<Props> = ({ data, onComplete }) => {
       </div>
       
       <div className="pb-[24px]">
-        <Button onClick={onComplete}>Open Weather</Button>
+        <Button onClick={onComplete}>Let's go</Button>
       </div>
     </ScreenLayout>
   );

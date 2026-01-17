@@ -34,11 +34,29 @@ interface PhotonResponse {
   features: PhotonFeature[];
 }
 
+const STORAGE_KEY = 'weather_app_onboarding_v2';
+
 export const AddressScreen: React.FC<Props> = ({ data, updateData, onNext, onSkip, onBack }) => {
   const [query, setQuery] = useState(data.homeLocation?.address || '');
   const [suggestions, setSuggestions] = useState<PhotonFeature[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
+
+  // Helper function to save location to localStorage immediately
+  const saveLocationToStorage = (homeLocation: OnboardingData['homeLocation']) => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      const existingData = stored ? JSON.parse(stored) : {};
+      const updatedData = {
+        ...existingData,
+        homeLocation,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
+      console.log('✅ Home location saved to localStorage:', homeLocation);
+    } catch (error) {
+      console.error('Failed to save location to localStorage:', error);
+    }
+  };
 
   useEffect(() => {
     // 1. Reset state if query is too short
@@ -138,17 +156,21 @@ export const AddressScreen: React.FC<Props> = ({ data, updateData, onNext, onSki
     setQuery(fullAddress);
     setSuggestions([]);
     
-    updateData({
-      homeLocation: {
-        address: fullAddress,
-        city: city || item.properties.name,
-        state: state || '',
-        coordinates: { 
-            latitude: item.geometry.coordinates[1], // Lat is index 1 in GeoJSON
-            longitude: item.geometry.coordinates[0] // Lon is index 0
-        }
+    const homeLocation = {
+      address: fullAddress,
+      city: city || item.properties.name,
+      state: state || '',
+      coordinates: { 
+          latitude: item.geometry.coordinates[1], // Lat is index 1 in GeoJSON
+          longitude: item.geometry.coordinates[0] // Lon is index 0
       }
-    });
+    };
+
+    // Save to localStorage immediately (even in dev mode)
+    saveLocationToStorage(homeLocation);
+    
+    // Also update React state
+    updateData({ homeLocation });
   };
 
   const handleCurrentLocation = () => {
@@ -180,14 +202,18 @@ export const AddressScreen: React.FC<Props> = ({ data, updateData, onNext, onSki
               setQuery(fullAddress);
               setSuggestions([]);
               
-              updateData({
-                homeLocation: {
-                  address: fullAddress,
-                  city: city || 'Current Location',
-                  state: state || '',
-                  coordinates: { latitude, longitude }
-                }
-              });
+              const homeLocation = {
+                address: fullAddress,
+                city: city || 'Current Location',
+                state: state || '',
+                coordinates: { latitude, longitude }
+              };
+
+              // Save to localStorage immediately (even in dev mode)
+              saveLocationToStorage(homeLocation);
+              
+              // Also update React state
+              updateData({ homeLocation });
           } else {
               throw new Error("No address found");
           }
@@ -195,14 +221,19 @@ export const AddressScreen: React.FC<Props> = ({ data, updateData, onNext, onSki
           console.error("Failed to detect location address:", error);
           const fallbackAddr = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
           setQuery(fallbackAddr);
-          updateData({
-            homeLocation: {
-              address: fallbackAddr,
-              city: 'Current Location',
-              state: '',
-              coordinates: { latitude, longitude }
-            }
-          });
+          
+          const homeLocation = {
+            address: fallbackAddr,
+            city: 'Current Location',
+            state: '',
+            coordinates: { latitude, longitude }
+          };
+
+          // Save to localStorage immediately (even in dev mode)
+          saveLocationToStorage(homeLocation);
+          
+          // Also update React state
+          updateData({ homeLocation });
         } finally {
           setIsGettingLocation(false);
         }
