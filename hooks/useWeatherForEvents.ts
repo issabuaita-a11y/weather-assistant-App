@@ -118,6 +118,8 @@ export function useWeatherForEvents(events: CalendarEvent[]): UseWeatherForEvent
                   weather,
                   hourlyForecast,
                   startTime,
+                  endTime,
+                  event.summary,
                   weatherFeatures
                 );
               } else if (weather) {

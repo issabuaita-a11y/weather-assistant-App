@@ -4,6 +4,15 @@ import { useCalendarEvents } from '../../hooks/useCalendarEvents';
 import { useWeatherForEvents } from '../../hooks/useWeatherForEvents';
 import { EventCarousel } from './EventCarousel';
 
+const getTimeBasedGreeting = () => {
+  const hour = new Date().getHours();
+  
+  if (hour >= 5 && hour < 12) return "Good morning";
+  if (hour >= 12 && hour < 17) return "Good afternoon";
+  if (hour >= 17 && hour < 21) return "Good evening";
+  return "Hello"; // Late night/early morning
+};
+
 export const HomePage: React.FC = () => {
   // Get upcoming events (today + next 16 days) - memoize to prevent infinite loops
   // 16 days to stay within forecast limits while showing all upcoming events
@@ -67,10 +76,15 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden min-h-0">
-      <div className="px-8 pt-4 pb-2 shrink-0">
-        <h1 className="text-[24px] mobile-lg:text-[28px] font-black text-black leading-tight">
-          Your Next Event
-        </h1>
+      <div className="px-8 pt-4 pb-0 shrink-0">
+        <div className="mb-6">
+          <h1 className="text-[24px] mobile-lg:text-[28px] font-black text-black leading-tight">
+            {getTimeBasedGreeting()}
+          </h1>
+          <p className="text-[14px] mobile-lg:text-[15px] font-medium text-black/60 mt-1">
+            Get ready for your day
+          </p>
+        </div>
       </div>
       <div className="flex-1 min-h-0">
         <EventCarousel events={nextEvents} />

@@ -9,12 +9,13 @@ import { HourlyForecast } from '../../types/weather';
 
 const STORAGE_KEY = 'weather_app_onboarding_v2';
 
-// Gradient themes matching onboarding
+// Gradient themes - distinct colors that contrast with blue background
+// Avoid blue cards on blue background - use peach, purple, green
 const cardGradients = [
-  'bg-gradient-to-br from-[#E0F2FE] via-[#BAE6FD] to-[#7DD3FC]',
-  'bg-gradient-to-br from-[#FFEDD5] via-[#FED7AA] to-[#FDBA74]',
-  'bg-gradient-to-br from-[#F3E8FF] via-[#E9D5FF] to-[#D8B4FE]',
-  'bg-gradient-to-br from-[#DCFCE7] via-[#BBF7D0] to-[#86EFAC]',
+  'bg-gradient-to-br from-[#FFEDD5] via-[#FED7AA] to-[#FDBA74]', // Peach/Orange (Card 1)
+  'bg-gradient-to-br from-[#F3E8FF] via-[#E9D5FF] to-[#D8B4FE]', // Purple/Pink (Card 2)
+  'bg-gradient-to-br from-[#DCFCE7] via-[#BBF7D0] to-[#86EFAC]', // Green/Teal (Card 3)
+  'bg-gradient-to-br from-[#FED7AA] via-[#FDBA74] to-[#FB923C]', // Orange (darker) (Card 4)
 ];
 
 function getWeatherIcon(condition: string, size: number = 20) {
@@ -96,13 +97,6 @@ function getWeatherAtTime(hourlyForecast: HourlyForecast[], targetTime: Date): H
   }
   
   return closest;
-}
-
-// Helper function to format time range
-function formatTimeRange(start: Date, end: Date): string {
-  const startTime = formatTime(start.toISOString());
-  const endTime = formatTime(end.toISOString());
-  return `${startTime} - ${endTime}`;
 }
 
 // Helper function to get reason text for a suggestion
@@ -203,20 +197,8 @@ export const EventWeatherCard: React.FC<{ event: EnrichedEvent; index: number }>
   const departureHoursBefore = hoursUntilEvent >= 2 ? 1.5 : 1;
   const departureTime = new Date(eventStartTime.getTime() - departureHoursBefore * 60 * 60 * 1000);
   
-  // Get weather at departure time and during event
+  // Get weather at departure time
   const departureWeather = getWeatherAtTime(hourlyForecast, departureTime);
-  const eventStartWeather = getWeatherAtTime(hourlyForecast, eventStartTime);
-  const eventEndWeather = getWeatherAtTime(hourlyForecast, eventEndTime);
-
-  // Calculate temp range during event
-  const eventTemps = hourlyForecast
-    .filter(h => {
-      const hourTime = new Date(h.time);
-      return hourTime >= eventStartTime && hourTime <= eventEndTime;
-    })
-    .map(h => h.temp);
-  const eventTempMin = eventTemps.length > 0 ? Math.min(...eventTemps) : weather?.temp;
-  const eventTempMax = eventTemps.length > 0 ? Math.max(...eventTemps) : weather?.temp;
 
   return (
     <div className={`${gradient} rounded-[24px] p-4 pb-5 shadow-lg border border-white/30 w-full h-auto flex flex-col overflow-x-hidden`}>
@@ -238,37 +220,7 @@ export const EventWeatherCard: React.FC<{ event: EnrichedEvent; index: number }>
 
       {weather ? (
         <>
-          {/* SMART TIPS SECTION - HERO */}
-          {event.suggestions.length > 0 && (
-            <div className="mb-3 p-3 bg-white/40 backdrop-blur-sm rounded-[16px] border border-white/50">
-              <div className="text-[12px] font-bold text-black/70 mb-2 flex items-center gap-2">
-                <span className="text-[14px]">💡</span>
-                <span>What to Bring</span>
-              </div>
-              <div className="space-y-2.5">
-                {event.suggestions.slice(0, 4).map((suggestion, idx) => {
-                  const reason = getSuggestionReason(suggestion, weather, hourlyForecast);
-                  return (
-                    <div key={idx} className="flex items-start gap-2.5">
-                      <span className="text-[20px] mt-0.5">{suggestion.icon}</span>
-                      <div className="flex-1 pt-0.5">
-                        <div className="text-[15px] mobile-lg:text-[16px] font-bold text-black leading-snug">
-                          {suggestion.text}
-                          {reason && (
-                            <span className="text-[13px] font-medium text-black/60 ml-1.5">
-                              ({reason})
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* WHEN YOU LEAVE SECTION */}
+          {/* WHEN YOU LEAVE SECTION - Show weather FIRST */}
           {departureWeather && (
             <div className="mb-3 p-3 bg-white/40 backdrop-blur-sm rounded-[16px] border border-white/50">
               <div className="text-[12px] font-bold text-black/70 mb-2">
@@ -312,50 +264,35 @@ export const EventWeatherCard: React.FC<{ event: EnrichedEvent; index: number }>
             </div>
           )}
 
-          {/* DURING YOUR EVENT SECTION */}
-          <div className="mb-3 p-3 bg-white/40 backdrop-blur-sm rounded-[16px] border border-white/50">
-            <div className="text-[12px] font-bold text-black/70 mb-2">
-              During Your Event {formatTimeRange(eventStartTime, eventEndTime)}
-            </div>
-            <div className="flex items-center gap-3 mb-2">
-              {getWeatherIcon(weather.condition, 24)}
-              <div>
-                {eventTempMin !== undefined && eventTempMax !== undefined && eventTempMin !== eventTempMax ? (
-                  <div className="text-[20px] font-black text-black leading-none">
-                    {eventTempMin}-{eventTempMax}°
-                  </div>
-                ) : (
-                  <div className="text-[20px] font-black text-black leading-none">
-                    {weather.temp}°
-                  </div>
-                )}
-                <div className="text-[12px] font-bold text-black/70">{weather.condition}</div>
+          {/* SMART TIPS SECTION - Show tips SECOND (based on weather above) */}
+          {event.suggestions.length > 0 && (
+            <div className="mb-3 p-3 bg-white/40 backdrop-blur-sm rounded-[16px] border border-white/50">
+              <div className="text-[12px] font-bold text-black/70 mb-2 flex items-center gap-2">
+                <span className="text-[14px]">💡</span>
+                <span>What to Bring</span>
+              </div>
+              <div className="space-y-2.5">
+                {event.suggestions.slice(0, 4).map((suggestion, idx) => {
+                  const reason = getSuggestionReason(suggestion, weather, hourlyForecast);
+                  return (
+                    <div key={idx} className="flex items-start gap-2.5">
+                      <span className="text-[20px] mt-0.5">{suggestion.icon}</span>
+                      <div className="flex-1 pt-0.5">
+                        <div className="text-[14px] font-bold text-black leading-snug">
+                          {suggestion.text}
+                          {reason && (
+                            <span className="text-[12px] font-medium text-black/60 ml-1.5">
+                              ({reason})
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {weatherFeatures.uvIndex && weather.uv !== undefined && (
-                <WeatherMetricBadge
-                  icon={<Sun size={14} />}
-                  label="UV"
-                  value={weather.uv.toString()}
-                />
-              )}
-              {weatherFeatures.windSpeed && weather.wind !== undefined && (
-                <WeatherMetricBadge
-                  icon={<Wind size={14} />}
-                  label="Wind"
-                  value={`${weather.wind} mph`}
-                />
-              )}
-              {weatherFeatures.precipitation && weather.precipitation > 0 && (
-                <WeatherMetricBadge
-                  icon={<CloudRain size={14} />}
-                  label="Rain"
-                  value={`${weather.precipitation}%`}
-                />
-              )}
-            </div>
-          </div>
+          )}
         </>
       ) : (
         <div className="text-center py-4">
