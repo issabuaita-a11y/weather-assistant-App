@@ -14,7 +14,7 @@ export const Dashboard: React.FC = () => {
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
         
         {/* Content */}
-        <div className="relative z-10 h-full">
+        <div className="relative z-10 h-full flex flex-col">
           {currentTab === 'home' && <HomePage />}
           {currentTab === 'trips' && <TripsPage />}
           {currentTab === 'profile' && (
