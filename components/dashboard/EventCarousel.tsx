@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence, PanInfo } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
 import { EnrichedEvent } from '../../hooks/useWeatherForEvents';
 import { EventWeatherCard } from './EventWeatherCard';
 
@@ -8,43 +7,102 @@ interface EventCarouselProps {
 }
 
 export const EventCarousel: React.FC<EventCarouselProps> = ({ events }) => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(0);
 
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    const swipeThreshold = 50; // Minimum distance to trigger swipe
+  // Measure container width for proper card sizing
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const updateWidth = () => {
+      setContainerWidth(container.clientWidth);
+    };
+
+    updateWidth();
+    const resizeObserver = new ResizeObserver(updateWidth);
+    resizeObserver.observe(container);
+
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  // Update current index based on scroll position
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || events.length === 0) return;
+
+    const handleScroll = () => {
+      const scrollLeft = container.scrollLeft;
+      const cardWidth = container.clientWidth;
+      const newIndex = Math.round(scrollLeft / cardWidth);
+      setCurrentIndex(newIndex);
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [events.length]);
+
+  // Convert vertical mouse wheel scrolling to horizontal scrolling
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      // Only handle if vertical scrolling is dominant
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        container.scrollLeft += e.deltaY;
+      }
+      // If horizontal scrolling, let browser handle it naturally
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => container.removeEventListener('wheel', handleWheel);
+  }, []);
+
+  // Scroll to specific card when dot is clicked
+  const scrollToIndex = (index: number) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
     
-    if (info.offset.x > swipeThreshold && currentIndex > 0) {
-      // Swipe right - go to previous
-      setCurrentIndex(currentIndex - 1);
-    } else if (info.offset.x < -swipeThreshold && currentIndex < events.length - 1) {
-      // Swipe left - go to next
-      setCurrentIndex(currentIndex + 1);
-    }
+    const cardWidth = container.clientWidth;
+    container.scrollTo({
+      left: index * cardWidth,
+      behavior: 'smooth',
+    });
   };
 
   if (events.length === 0) return null;
 
   return (
     <div className="relative w-full h-full flex flex-col min-h-0">
-      {/* Carousel Container - Full screen swipeable area */}
-      <div className="flex-1 relative overflow-hidden min-h-0 flex items-start">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={currentIndex}
-            initial={{ opacity: 0, x: 300 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -300 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.2}
-            onDragEnd={handleDragEnd}
-            className="w-full px-8 pb-6"
-            style={{ touchAction: 'pan-x' }}
-          >
-            <EventWeatherCard event={events[currentIndex]} index={currentIndex} />
-          </motion.div>
-        </AnimatePresence>
+      {/* Native Scroll Container - Full size, covers entire area */}
+      <div 
+        ref={scrollContainerRef}
+        className="flex-1 overflow-x-auto overflow-y-hidden min-h-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        style={{ 
+          WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-x pan-y',
+          scrollSnapType: 'x mandatory',
+        }}
+      >
+        <div className="flex h-full flex-nowrap">
+          {events.map((event, index) => (
+            <div
+              key={event.id}
+              className="flex-shrink-0 px-8 pb-6"
+              style={{ 
+                width: containerWidth > 0 ? `${containerWidth}px` : '100%',
+                minWidth: containerWidth > 0 ? `${containerWidth}px` : '100%',
+                touchAction: 'pan-x pan-y',
+                scrollSnapAlign: 'start',
+              }}
+            >
+              <EventWeatherCard event={event} index={index} />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Dots Indicator - Fixed at bottom, above navigation bar, closer to card */}
@@ -54,7 +112,7 @@ export const EventCarousel: React.FC<EventCarouselProps> = ({ events }) => {
             {events.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentIndex(index)}
+                onClick={() => scrollToIndex(index)}
                 className={`transition-all duration-200 ${
                   index === currentIndex
                     ? 'w-2.5 h-2.5 rounded-full bg-black shadow-sm'
