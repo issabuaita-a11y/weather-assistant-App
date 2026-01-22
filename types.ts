@@ -32,6 +32,13 @@ export interface CalendarEvent {
   calendarName?: string; // Optional: calendar name for filtering
 }
 
+export interface NotificationPreferences {
+  morningBriefingEnabled: boolean;
+  eventRemindersEnabled: boolean;
+  morningBriefingTime: string; // Format: "7:00 AM"
+  eventReminderTime: string; // Format: "1 hour before heading out"
+}
+
 export interface OnboardingData {
   completed: boolean;
   currentStep: number;
@@ -44,6 +51,7 @@ export interface OnboardingData {
   weatherFeatures: WeatherFeatures;
   calendarToken?: string;
   calendarEvents?: CalendarEvent[];
+  notificationPreferences?: NotificationPreferences;
 }
 
 export enum ScreenStep {

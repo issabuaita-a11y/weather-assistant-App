@@ -247,7 +247,7 @@ export const AddressScreen: React.FC<Props> = ({ data, updateData, onNext, onSki
   };
 
   return (
-    <ScreenLayout step={1} totalSteps={4} showBack onBack={onBack} onSkip={onSkip} theme="purple">
+    <ScreenLayout step={1} totalSteps={4} showBack onBack={onBack} theme="purple">
       <div className="flex-1 flex flex-col pt-4 mobile-lg:pt-6">
         {/* Top Section: Title */}
         <div className="mb-6 mobile-lg:mb-8">
@@ -313,14 +313,18 @@ export const AddressScreen: React.FC<Props> = ({ data, updateData, onNext, onSki
         </div>
       </div>
 
-      <div className="space-y-2 pb-4">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <Lock size={12} className="text-black/40" />
-          <span className="text-[11px] font-semibold text-black/40 uppercase tracking-widest">Private & Secure</span>
+      <div className="sticky bottom-0 left-0 right-0 pt-4 pb-4 z-20 bg-transparent">
+        <div className="space-y-2">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Lock size={12} className="text-black/40" />
+            <span className="text-[11px] font-semibold text-black/40 uppercase tracking-widest">Private & Secure</span>
+          </div>
+          <Button onClick={onNext} disabled={!data.homeLocation}>
+            Save Location
+          </Button>
+          {/* Spacer to match Calendar screen's Skip button height and spacing */}
+          <div className="h-[44px] mobile-lg:h-[48px]"></div>
         </div>
-        <Button onClick={onNext} disabled={!data.homeLocation}>
-          Next
-        </Button>
       </div>
     </ScreenLayout>
   );

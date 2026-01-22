@@ -36,15 +36,15 @@ export const INITIAL_ONBOARDING_DATA: OnboardingData = {
   weatherFeatures: {
     temperature: true,
     hourlyForecast: true,
+    feelsLike: true,
     precipitation: true,
     uvIndex: true,
-    sunriseSunset: true,
-    windSpeed: true,
+    windSpeed: false,
     humidity: false,
+    sunriseSunset: false,
     airQuality: false,
     visibility: false,
     pressure: false,
-    feelsLike: false,
   },
 };
 

@@ -12,14 +12,14 @@ interface Props {
 }
 
 const FEATURE_CONFIG: { key: keyof WeatherFeatures; label: string; icon: React.ReactNode; emoji: string }[] = [
+    { key: 'feelsLike', label: 'Feels Like', icon: <Gauge size={20} />, emoji: '🌡️' },
+    { key: 'precipitation', label: 'Precipitation', icon: <CloudRain size={20} />, emoji: '🌧️' },
     { key: 'uvIndex', label: 'UV Index', icon: <Sun size={20} />, emoji: '☀️' },
-    { key: 'sunriseSunset', label: 'Sunrise', icon: <Sunrise size={20} />, emoji: '🌅' },
     { key: 'windSpeed', label: 'Wind', icon: <Wind size={20} />, emoji: '💨' },
     { key: 'humidity', label: 'Humidity', icon: <Droplets size={20} />, emoji: '💧' },
-    { key: 'precipitation', label: 'Precipitation', icon: <CloudRain size={20} />, emoji: '🌧️' },
+    { key: 'sunriseSunset', label: 'Sunrise', icon: <Sunrise size={20} />, emoji: '🌅' },
     { key: 'airQuality', label: 'Air Quality', icon: <Activity size={20} />, emoji: '🫧' },
     { key: 'visibility', label: 'Visibility', icon: <Eye size={20} />, emoji: '👁️' },
-    { key: 'feelsLike', label: 'Feels Like', icon: <Gauge size={20} />, emoji: '🌡️' },
 ];
 
 export const FeaturesScreen: React.FC<Props> = ({ data, updateData, onNext, onBack }) => {
@@ -44,15 +44,6 @@ export const FeaturesScreen: React.FC<Props> = ({ data, updateData, onNext, onBa
           </p>
 
           <div className="space-y-1.5">
-              {/* Essential (Static) */}
-              <div className="p-4 mobile-lg:p-5 rounded-[24px] bg-black/5 border border-black/5 flex items-center justify-between opacity-50">
-                  <div className="flex items-center gap-4">
-                      <span className="text-[20px]">☀️</span>
-                      <span className="text-[16px] mobile-lg:text-[17px] font-bold text-black">Essentials</span>
-                  </div>
-                  <span className="text-[12px] font-bold uppercase tracking-wider text-black/40">Active</span>
-              </div>
-
               {/* Customizables */}
                {FEATURE_CONFIG.map((item) => (
                   <div key={item.key} className="p-4 mobile-lg:p-5 rounded-[24px] bg-white/40 border border-white/50 backdrop-blur-sm flex items-center justify-between">
